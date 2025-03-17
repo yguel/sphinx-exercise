@@ -88,7 +88,7 @@ class ExerciseDirective(SphinxExerciseBaseDirective):
     }
 
     def run(self) -> List[Node]:
-        self.defaults = {"title_text": "Exercise"}
+        self.defaults = {"title_text": self.env.config.exercise_title}
         self.serial_number = self.env.new_serialno()
 
         # Initialise Registry (if needed)
@@ -153,6 +153,7 @@ class ExerciseDirective(SphinxExerciseBaseDirective):
         node["type"] = self.name
         node["hidden"] = True if "hidden" in self.options else False
         node["serial_number"] = self.serial_number
+        node["node_type"] = "exercise"
         node.document = self.state.document
 
         self.add_name(node)
@@ -216,7 +217,7 @@ class SolutionDirective(SphinxExerciseBaseDirective):
     solution_node = solution_node
 
     def run(self) -> List[Node]:
-        self.defaults = {"title_text": "Solution to"}
+        self.defaults = {"title_text": self.env.config.solution_title}
         target_label = self.arguments[0]
         self.serial_number = self.env.new_serialno()
 
@@ -270,6 +271,7 @@ class SolutionDirective(SphinxExerciseBaseDirective):
         node["type"] = self.name
         node["hidden"] = True if "hidden" in self.options else False
         node["serial_number"] = self.serial_number
+        node["node_type"] = "solution"
         node.document = self.state.document
 
         self.add_name(node)

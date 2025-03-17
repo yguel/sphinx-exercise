@@ -106,7 +106,7 @@ def init_numfig(app: Sphinx, config: Config) -> None:
     """Initialize numfig"""
 
     config["numfig"] = True
-    numfig_format = {"exercise": "Exercise %s"}
+    numfig_format = {"exercise": config.exercise_title + " %s"}
     # Merge with current sphinx settings
     numfig_format.update(config.numfig_format)
     config.numfig_format = numfig_format
@@ -210,6 +210,10 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.add_post_transform(ResolveLinkTextToSolutions)
 
     app.add_css_file("exercise.css")
+    
+    #Define the extension configuration variables
+    app.add_config_value("exercise_title", "Exercise", "env") # The title of the exercise
+    app.add_config_value("solution_title", "Solution to", "env") # The title of the solution
 
     return {
         "version": "builtin",
