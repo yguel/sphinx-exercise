@@ -156,7 +156,8 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     #Define the extension configuration variables
     app.add_config_value("exercise_title_text", "Exercise", "env") # The title of the exercise
     app.add_config_value("solution_title_text", "Solution to", "env") # The title of the solution
-    app.add_config_value("language_map", None, "env") # A map of translated strings
+    if not hasattr(app.config, "language_map"):
+        app.add_config_value("language_map", None, "env") # A map of translated strings
     app.add_config_value("hide_solutions", False, "env")
 
     app.connect("config-inited", init_numfig)  # event order - 1
