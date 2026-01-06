@@ -50,6 +50,12 @@ from .nodes import (
     exercise_latex_number_reference,
     visit_exercise_latex_number_reference,
     depart_exercise_latex_number_reference,
+    gettext_visit_exercise_node,
+    gettext_depart_exercise_node,
+    gettext_visit_exercise_enumerable_node,
+    gettext_depart_exercise_enumerable_node,
+    gettext_visit_solution_node,
+    gettext_depart_solution_node,
 )
 from .transforms import (
     CheckGatedDirectives,
@@ -171,6 +177,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
         singlehtml=(visit_exercise_node, depart_exercise_node),
         html=(visit_exercise_node, depart_exercise_node),
         latex=(visit_exercise_node, depart_exercise_node),
+        gettext=(gettext_visit_exercise_node, gettext_depart_exercise_node),
     )
 
     app.add_enumerable_node(
@@ -180,6 +187,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
         singlehtml=(visit_exercise_enumerable_node, depart_exercise_enumerable_node),
         html=(visit_exercise_enumerable_node, depart_exercise_enumerable_node),
         latex=(visit_exercise_enumerable_node, depart_exercise_enumerable_node),
+        gettext=(gettext_visit_exercise_enumerable_node, gettext_depart_exercise_enumerable_node),
     )
 
     app.add_node(
@@ -187,6 +195,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
         singlehtml=(visit_solution_node, depart_solution_node),
         html=(visit_solution_node, depart_solution_node),
         latex=(visit_solution_node, depart_solution_node),
+        gettext=(gettext_visit_solution_node, gettext_depart_solution_node),
     )
 
     # Internal Title Nodes that don't need visit_ and depart_ methods

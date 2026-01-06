@@ -14,8 +14,11 @@ from docutils import nodes as docutil_nodes
 from sphinx import addnodes as sphinx_nodes
 from sphinx.writers.latex import LaTeXTranslator
 from .latex import LaTeXMarkup
+from sphinx.locale import _
+
 
 logger = logging.getLogger(__name__)
+i18n_logger = logging.getLogger("sphinx-exercise-i18n")
 LaTeX = LaTeXMarkup()
 
 
@@ -24,11 +27,38 @@ LaTeX = LaTeXMarkup()
 
 class exercise_node(docutil_nodes.Admonition, docutil_nodes.Element):
     gated = False
-
+    def gettext(self):
+        text = ""
+        # Assume the first title node is the title to be translated.
+        for child in self.children:
+            if isinstance(child, docutil_nodes.title):
+                text = child.astext()
+                break
+            elif isinstance(child, docutil_nodes.subtitle):
+                text = child.astext()
+                break
+        logger.debug("exercise_node gettext() called; returning: %r", text)
+        return text
+    
+    def astext(self):
+        text=self.gettext()
+        logger.debug("exercise_node astext() called; returning: %r", text)
+        return text
 
 class exercise_enumerable_node(docutil_nodes.Admonition, docutil_nodes.Element):
     gated = False
     resolved_title = False
+    def gettext(self):
+        # Assume the first title node is the title to be translated.
+        for child in self.children:
+            if isinstance(child, docutil_nodes.title):
+                return child.astext()
+            elif isinstance(child, docutil_nodes.subtitle):
+                return child.astext()
+        return ""
+    
+    def astext(self):
+        return self.gettext()
 
 
 class exercise_end_node(docutil_nodes.Admonition, docutil_nodes.Element):
@@ -37,6 +67,17 @@ class exercise_end_node(docutil_nodes.Admonition, docutil_nodes.Element):
 
 class solution_node(docutil_nodes.Admonition, docutil_nodes.Element):
     resolved_title = False
+    def gettext(self):
+        # Assume the first title node is the title to be translated.
+        for child in self.children:
+            if isinstance(child, docutil_nodes.title):
+                return child.astext()
+            elif isinstance(child, docutil_nodes.subtitle):
+                return child.astext()
+        return ""
+    
+    def astext(self):
+        return self.gettext()
 
 
 class solution_start_node(docutil_nodes.Admonition, docutil_nodes.Element):
@@ -57,8 +98,7 @@ class exercise_title(docutil_nodes.title):
 
 
 class exercise_subtitle(docutil_nodes.subtitle):
-    pass
-
+   pass
 
 class solution_title(docutil_nodes.title):
     def default_title(self):
@@ -71,7 +111,6 @@ class solution_title(docutil_nodes.title):
 
 class solution_subtitle(docutil_nodes.subtitle):
     pass
-
 
 class exercise_latex_number_reference(sphinx_nodes.number_reference):
     pass
@@ -181,6 +220,38 @@ def visit_exercise_latex_number_reference(self, node):
     self.body.append(hyperref)
     raise docutil_nodes.SkipNode
 
+## Gettext visit and depart functions
 
 def depart_exercise_latex_number_reference(self, node):
+    pass
+
+def gettext_visit_exercise_node(self, node):
+    msg = node.gettext()
+    i18n_logger.info("→ gettext_visit_exercise_node: %r @ line %s", msg, node.line)
+    if msg:
+        # lineno lives on the node
+        self.add_message(msg, node.line)
+    raise docutil_nodes.SkipNode
+
+def gettext_depart_exercise_node(self, node):
+    pass
+
+def gettext_visit_exercise_enumerable_node(self, node):
+    msg = node.gettext()
+    i18n_logger.info("→ gettext_visit_exercise_enumerable_node: %r @ line %s", msg, node.line)
+    if msg:
+        self.add_message(msg, node.line)
+    raise docutil_nodes.SkipNode
+
+def gettext_depart_exercise_enumerable_node(self, node):
+    pass
+
+def gettext_visit_solution_node(self, node):
+    msg = node.gettext()
+    i18n_logger.info("→ gettext_visit_solution_node: %r @ line %s", msg, node.line)
+    if msg:
+        self.add_message(msg, node.line)
+    raise docutil_nodes.SkipNode
+
+def gettext_depart_solution_node(self, node):
     pass
